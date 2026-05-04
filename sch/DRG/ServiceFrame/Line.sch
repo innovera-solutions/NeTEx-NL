@@ -19,12 +19,10 @@
         <!-- De TransportSubMode van een OperationalContext moet passen bij de VehicleMode, conform de beschrijving in §19.13. -->
 
         <!-- C -->
-        <!-- Elke Line moet een PrivateCode met type “LinePlanningNumber” hebben, en de waarde hiervan mag niet leeg zijn. -->
-        <sch:assert test="ntx:privateCodes/ntx:PrivateCode[@type='LinePlanningNumber']">PrivateCode van type 'LinePlanningNumber' is verplicht</sch:assert>
+        <sch:assert test="ntx:privateCodes/ntx:PrivateCode[@type='LinePlanningNumber']/text()!=''">De waarde van PrivateCode van type 'LinePlanningNumber' mag niet leeg zijn</sch:assert>
 
         <!-- D -->
-        <!-- Als er voor een Line een ExternalObjectRefStructure met type “LineVeTagNummer” is geleverd, mag de waarde (lees: ref) niet leeg zijn. -->
-        <sch:assert test="ntx:ExternalLineRef[@type='VetagLineNumber' and @ref!='']">ExternalLineRef met type="VetagLineNumber" is verplicht</sch:assert>
+        <sch:assert test="not(ntx:ExternalLineRef[@type='VetagLineNumber']) or ntx:ExternalLineRef[@type='VetagLineNumber' and @ref!='']">Als ExternalLineRef met type 'VetagLineNumber' is geleverd, mag de waarde (ref) niet leeg zijn</sch:assert>
 
         <!-- E -->
         <!-- Alle in een GroupOfLines genoemde Line-elementen moeten gedefinieerd zijn binnen de levering.

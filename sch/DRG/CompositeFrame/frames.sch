@@ -5,6 +5,6 @@
         <sch:assert test="ntx:ServiceFrame/ntx:TypeOfFrameRef[count(@ref='NL:BISON:TypeOfFrame:NL_TT_SERVICE')=1]">Er moet exact 1 ServiceFrame (van type 'NL:BISON:TypeOfFrame:NL_TT_SERVICE') worden geleverd als onderdeel van de dienstregeling</sch:assert>
         <sch:assert test="ntx:TimetableFrame/ntx:TypeOfFrameRef[count(@ref='NL:BISON:TypeOfFrame:NL_TT_TIMETABLE')&gt;0]">Er moet minimaal 1 TimetableFrame (van type 'NL:BISON:TypeOfFrame:NL_TT_TIMETABLE') worden geleverd als onderdeel van de dienstregeling</sch:assert>
         <sch:assert test="ntx:ServiceCalendarFrame/ntx:TypeOfFrameRef[count(@ref='NL:BISON:TypeOfFrame:NL_TT_CALENDAR')=1]">Er moet exact 1 ServiceCalendarFrame (van type 'NL:BISON:TypeOfFrame:NL_TT_CALENDAR') worden geleverd als onderdeel van de dienstregeling</sch:assert>
-        <sch:assert test="ntx:VehicleScheduleFrame/ntx:TypeOfFrameRef[count(@ref='NL:BISON:TypeOfFrame:NL_TT_VEHICLE')=1]">Er moet exact 1 VehicleScheduleFrame (van type 'NL:BISON:TypeOfFrame:NL_TT_VEHICLE') worden geleverd als onderdeel van de dienstregeling</sch:assert>
+        <sch:assert test="not(ntx:VehicleScheduleFrame) or ntx:VehicleScheduleFrame/ntx:TypeOfFrameRef[count(@ref='NL:BISON:TypeOfFrame:NL_TT_VEHICLE')&lt;2]">Er moet 0 of 1 VehicleScheduleFrames (van type 'NL:BISON:TypeOfFrame:NL_TT_VEHICLE') worden geleverd als onderdeel van de dienstregeling</sch:assert>
     </sch:rule>
 </sch:pattern>

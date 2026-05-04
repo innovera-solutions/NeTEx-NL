@@ -14,7 +14,7 @@
         <sch:assert test="xs:dateTime($from) gt $now">FromDate must be in the future. Current system time: '<value-of select="$now"/>'.</sch:assert>
 
         <!-- B -->
-        <sch:assert test="xs:dateTime($to) gt xs:dateTime($from)">ToDate must be later than FromDate.</sch:assert>
+        <sch:assert test="xs:dateTime($to) ge xs:dateTime($from)">ToDate must be later than or equal to FromDate.</sch:assert>
 
         <!-- C -->
         <sch:assert test="matches($from, 'T00:00:00')">The time part of FromDate must be set to T00:00:00.</sch:assert>

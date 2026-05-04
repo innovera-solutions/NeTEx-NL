@@ -11,6 +11,8 @@
         <!-- TODO Alle TimingLinkRefs in de JourneyRunTimes van een TimeDemandType dienen uniek te zijn binnen de rit. -->
 
         <!-- B -->
-        <!-- TODO De RunTime moet groter zijn dan 0 seconden en kleiner dan 24 uur. -->
+        <sch:assert test="xs:dayTimeDuration(ntx:RunTime) gt xs:dayTimeDuration('PT0S') and xs:dayTimeDuration(ntx:RunTime) lt xs:dayTimeDuration('PT24H')">
+            RunTime moet groter zijn dan 0 seconden en kleiner dan 24 uur
+        </sch:assert>
     </sch:rule>
 </sch:pattern>
