@@ -9,31 +9,41 @@
         <sch:assert test="ntx:TimeDemandTypeRef">TimeDemandTypeRef is verplicht</sch:assert>
 
         <!-- Other business rules -->
-        <!-- A -->
-        <!-- Als Print=true, dan is validityConditions verplicht. -->
+        <!-- B: Als Print=true, dan is validityConditions verplicht.
+             NB: validityConditions is al onvoorwaardelijk verplicht (strenger dan de PDF-regel). -->
 
-        <!-- B -->
-        <!-- Indien dayTypes zijn meegegeven, dan dient de hieruit af te leiden geldigheid gelijk te zijn aan de geldigheid die volgt uit validityConditions. -->
+        <!-- C: Geldigheid in dayTypes consistent met validityConditions -->
+        <!-- Niet implementeerbaar: vereist datum-interpretatie van ValidDayBits en vergelijking met DayType-geldigheden -->
 
-        <!-- C -->
+        <!-- D -->
         <!-- Elke ServiceJourney moet een PrivateCode met type “JourneyNumber” hebben, en de waarde hiervan mag niet leeg zijn. -->
         <sch:assert test="ntx:privateCodes/ntx:PrivateCode[@type='JourneyNumber']!=''">PrivateCode van type 'JourneyNumber' is verplicht en mag niet leeg zijn</sch:assert>
 
-        <!-- D -->
-        <!-- Alle ServiceJourneys binnen een CompositeFrame een dienen een uniek LinePlanningNumber, JourneyNumber en DataOwnerCode te hebben voor alle operationele dagen die zijn gespecificeerd binnen het CompositeFrame. Voor deze controle dienen de ritten uit alle Timetable-frames te worden gecombineerd. -->
+        <!-- E: Dubbele ritten - uniek LinePlanningNumber+JourneyNumber+DataOwnerCode per operationele dag -->
+        <!-- Niet implementeerbaar: vereist cross-frame combinatie van alle TimetableFrames en datum-interpretatie -->
 
-        <!-- E -->
-        <!-- Elke AvailabilityCondition van een ServiceJourney (met IsAvailable = ‘true’) definieert de geldigheid voor een periode die niet geheel of gedeeltelijk overlapt met een andere AvailabilityCondition (met IsAvailable = ‘true’) voor diezelfde ServiceJourney.  -->
+        <!-- F: AvailabilityConditions (IsAvailable=true) mogen niet overlappen qua periodes -->
+        <sch:assert test="not(ntx:validityConditions/ntx:AvailabilityCondition[not(@isAvailable='false')][
+            preceding-sibling::ntx:AvailabilityCondition[not(@isAvailable='false')][
+                ntx:FromDate &lt;= current()/ntx:ToDate and ntx:ToDate &gt;= current()/ntx:FromDate
+            ]
+        ])">
+            AvailabilityConditions (met IsAvailable=true) van dezelfde ServiceJourney mogen niet overlappen in periode
+        </sch:assert>
 
-        <!-- F -->
-        <!-- Voor elke rit kunnen op twee manieren TimingLinks worden bepaald:
-                1. ServiceJourney -> ServiceJourneyPattern -> PointsInJourneyPattern -> TimingLink
-                2. ServiceJourneyPattern -> TimeDemandGroup -> RunTimes -> JourneyRunTime -> TimingLink
-             De set van TimingLinks die via pad 1 kan worden bepaald, dient exact gelijk te zijn aan de set die via pad 2 kan worden bepaald. -->
-
-        <!-- G -->
-        <!-- Voor omleidingsritten mag verwezen worden naar de ‘originele rit’ middels de attributen derivedFromObjectRef
-             en derivedFromVersionRef. Het is echter niet toegestaan om op deze manier te nesten. Met andere woorden:
-             als van rit A naar rit B verwezen wordt, dan mag niet rit B niet op zijn beurt ook weer naar een rit verwijzen. -->
+        <!-- G: TimingLinks via JourneyPattern-pad moeten gelijk zijn aan TimingLinks via TimeDemandType-pad -->
+        <sch:let name="pattern-timing-links" value="string-join(
+            for $ref in //ntx:ServiceJourneyPattern[@id=current()/ntx:ServiceJourneyPatternRef/@ref]/ntx:pointsInSequence/*/ntx:OnwardTimingLinkRef/@ref
+            return string($ref), ' ')"/>
+        <sch:let name="tdt-timing-links" value="string-join(
+            for $ref in //ntx:TimeDemandType[@id=current()/ntx:TimeDemandTypeRef/@ref]/ntx:runTimes/ntx:JourneyRunTime/ntx:TimingLinkRef/@ref
+            return string($ref), ' ')"/>
+        <sch:assert test="$pattern-timing-links = $tdt-timing-links">
+            De set TimingLinks via het ServiceJourneyPattern (pad 1) moet gelijk zijn aan de set via het TimeDemandType (pad 2)
+        </sch:assert>
+        <!-- H: Geen nesting bij derivedFromObjectRef -->
+        <sch:assert test="not(@derivedFromObjectRef) or not(//ntx:ServiceJourney[@id=current()/@derivedFromObjectRef]/@derivedFromObjectRef)">
+            Als van rit A naar rit B verwezen wordt via derivedFromObjectRef, dan mag rit B niet op zijn beurt ook weer naar een rit verwijzen
+        </sch:assert>
     </sch:rule>
 </sch:pattern>
