@@ -8,7 +8,9 @@
 
         <!-- Other business rules -->
         <!-- A -->
-        <!-- TODO Alle TimingLinkRefs in de JourneyRunTimes van een TimeDemandType dienen uniek te zijn binnen de rit. -->
+        <sch:assert test="not(preceding-sibling::ntx:JourneyRunTime[ntx:TimingLinkRef/@ref = current()/ntx:TimingLinkRef/@ref])">
+            Alle TimingLinkRefs in de JourneyRunTimes van een TimeDemandType dienen uniek te zijn
+        </sch:assert>
 
         <!-- B -->
         <sch:assert test="xs:dayTimeDuration(ntx:RunTime) gt xs:dayTimeDuration('PT0S') and xs:dayTimeDuration(ntx:RunTime) lt xs:dayTimeDuration('PT24H')">
